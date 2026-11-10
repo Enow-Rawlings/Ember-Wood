@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Emberwood supplies premium firewood and timber for your home, garden and projects. Hardwood logs, kindling, stove wood and more — delivered across the UK and France." />
+    <meta name="robots" content="index,follow" />
+    <meta name="theme-color" content="#18352F" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1A1F1C" media="(prefers-color-scheme: dark)" />
+
+    <!-- hreflang — UK English and French audiences -->
+    <link rel="alternate" hreflang="en-GB" href="https://www.emberwood.co.uk/" />
+    <link rel="alternate" hreflang="fr-FR" href="https://www.emberwood.co.uk/" />
+    <link rel="alternate" hreflang="x-default" href="https://www.emberwood.co.uk/" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="Emberwood" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Emberwood — Premium Firewood &amp; Timber" />
+    <meta property="og:description" content="High-quality firewood and timber for your home, garden and projects. Sustainably sourced, expertly prepared, delivered to your door." />
+    <meta property="og:image" content="/firewood-hero.jpg" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Emberwood — Premium Firewood &amp; Timber" />
+    <meta name="twitter:description" content="Hardwood logs, kindling and timber delivered across the UK and France." />
+    <meta name="twitter:image" content="/firewood-hero.jpg" />
+
+    <!-- Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Prevent dark-mode flash -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('emberwood-theme')
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          if (stored === 'dark' || (!stored && prefersDark)) {
+            document.documentElement.classList.add('dark')
+          }
+          // Restore saved language as lang attribute immediately to prevent flash
+          var lang = localStorage.getItem('emberwood-lang')
+          if (lang === 'fr') {
+            document.documentElement.setAttribute('lang', 'fr-FR')
+          }
+        } catch (e) {}
+      })()
+    </script>
+
+    <title>Emberwood — Firewood &amp; Timber</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

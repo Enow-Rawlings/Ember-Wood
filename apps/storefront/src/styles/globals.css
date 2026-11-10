@@ -1,0 +1,263 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Emberwood Design System
+   Font: Poppins (soft, rounded, premium)
+   Theme: Light + Dark via class="dark" on <html>
+   Animations: CSS keyframes + scroll-reveal via IntersectionObserver
+   ============================================================ */
+
+:root {
+  /* ── Brand colours ──────────────────────────────────────────── */
+  --color-forest-green:  #18352F;
+  --color-ember-orange:  #C46B3C;
+  --color-cream:         #F7F3EA;
+  --color-pale-sage:     #E7EEE8;
+  --color-charcoal:      #252B28;
+  --color-stone-grey:    #6B7280;
+  --color-border-warm:   #DDD5C8;
+
+  /* ── Semantic surface tokens (light mode) ───────────────────── */
+  --bg-base:           var(--color-cream);
+  --bg-surface:        #ffffff;
+  --bg-surface-2:      var(--color-pale-sage);
+  --bg-nav:            var(--color-forest-green);
+  --text-primary:      var(--color-charcoal);
+  --text-secondary:    var(--color-stone-grey);
+  --text-accent:       var(--color-ember-orange);
+  --border-color:      var(--color-border-warm);
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  --font-sans: 'Poppins', system-ui, sans-serif;
+
+  /* ── Motion ─────────────────────────────────────────────────── */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out:    cubic-bezier(0.0, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+}
+
+/* ── Dark mode surface tokens ─────────────────────────────────── */
+.dark {
+  --bg-base:           #1A1F1C;
+  --bg-surface:        #242A26;
+  --bg-surface-2:      #2E3530;
+  --bg-nav:            #111815;
+  --text-primary:      #E8EDE9;
+  --text-secondary:    #8FA89A;
+  --text-accent:       #E07B44;
+  --border-color:      #3A4240;
+  --color-ember-orange: #E07B44;
+}
+
+/* ============================================================
+   Scroll-reveal animation states
+   .reveal = element waiting to be revealed
+   .reveal.in-view = triggered by IntersectionObserver
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity   0.65s var(--ease-spring),
+    transform 0.65s var(--ease-spring);
+}
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-36px);
+  transition:
+    opacity   0.65s var(--ease-spring),
+    transform 0.65s var(--ease-spring);
+}
+.reveal-left.in-view { opacity: 1; transform: translateX(0); }
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(36px);
+  transition:
+    opacity   0.65s var(--ease-spring),
+    transform 0.65s var(--ease-spring);
+}
+.reveal-right.in-view { opacity: 1; transform: translateX(0); }
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.93);
+  transition:
+    opacity   0.5s var(--ease-spring),
+    transform 0.5s var(--ease-spring);
+}
+.reveal-scale.in-view { opacity: 1; transform: scale(1); }
+
+/* Staggered delay helpers */
+.reveal-delay-1 { transition-delay: 0.08s !important; }
+.reveal-delay-2 { transition-delay: 0.16s !important; }
+.reveal-delay-3 { transition-delay: 0.24s !important; }
+.reveal-delay-4 { transition-delay: 0.32s !important; }
+
+/* ============================================================
+   Base layer
+   ============================================================ */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    font-size: 16px;
+    /* Dark mode background on scroll overscroll */
+    background-color: var(--bg-base);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .reveal, .reveal-left, .reveal-right, .reveal-scale {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    line-height: 1.2;
+    color: var(--text-primary);
+    font-weight: 700;
+  }
+
+  a {
+    color: var(--text-accent);
+    text-underline-offset: 3px;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid var(--color-ember-orange);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  input, button, textarea, select { font: inherit; }
+  p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+}
+
+/* ============================================================
+   Component layer
+   ============================================================ */
+@layer components {
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50
+           focus:rounded-lg focus:bg-ember-orange focus:px-4 focus:py-2 focus:text-white focus:font-medium;
+  }
+
+  /* ── Ember glow effect on CTA buttons ── */
+  .btn-glow:hover {
+    box-shadow: 0 0 20px rgb(196 107 60 / 0.45);
+  }
+
+  /* ── Glass card ── */
+  .glass {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .dark .glass {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  /* ── Section divider ── */
+  .section-divider {
+    width: 48px;
+    height: 3px;
+    background: linear-gradient(to right, #C46B3C, #E07B44);
+    border-radius: 99px;
+    margin: 0 auto 1.5rem;
+  }
+
+  /* ── Eyebrow label ── */
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-ember-orange;
+  }
+
+  /* ── Input base ── */
+  .input-base {
+    @apply w-full rounded-lg border border-border-warm bg-white px-4 py-2.5 text-sm text-charcoal
+           placeholder-stone-grey focus:border-ember-orange focus:outline-none focus:ring-2 focus:ring-ember-orange/20
+           transition-colors duration-150;
+  }
+  .dark .input-base {
+    @apply bg-dark-surface-2 border-dark-border text-dark-text placeholder-dark-muted;
+  }
+}
+
+/* ============================================================
+   Dark mode prose overrides
+   ============================================================ */
+.dark .prose {
+  color: var(--text-primary);
+}
+.dark .prose h1, .dark .prose h2, .dark .prose h3,
+.dark .prose h4, .dark .prose strong {
+  color: var(--text-primary);
+}
+.dark .prose a { color: var(--color-ember-orange); }
+
+/* ── Smooth theme transition ────────────────────────────────── */
+html.theme-transitioning,
+html.theme-transitioning * {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.2s ease,
+    color 0.2s ease !important;
+}
+
+/* ── Dark mode text contrast overrides ─────────────────────────────────────── */
+/* Ensure body text is always readable in dark mode regardless of Tailwind classes */
+.dark .text-charcoal   { color: #E8EDE9 !important; }
+.dark .text-stone-grey { color: #A3B8AA !important; }
+
+/* Product page specs table */
+.dark table th { color: #A3B8AA; }
+.dark table td { color: #E8EDE9; }
+
+/* Cards and surfaces */
+.dark .bg-white  { background-color: #242A26 !important; }
+.dark .bg-cream  { background-color: #1A1F1C !important; }
+.dark .bg-pale-sage { background-color: #2E3530 !important; }
+.dark .border-border-warm { border-color: #3A4240 !important; }
+
+/* Prose content */
+.dark .prose       { color: #E8EDE9; }
+.dark .prose h1, .dark .prose h2, .dark .prose h3,
+.dark .prose h4, .dark .prose strong { color: #E8EDE9; }
+.dark .prose a     { color: #E07B44; }

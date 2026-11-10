@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Emberwood Admin Design Tokens
+   Forest-green sidebar, ember-orange accents, warm surfaces.
+   ============================================================ */
+:root {
+  /* ── Brand ─────────────────────────────────────────────────── */
+  --color-forest-green:  #18352F;
+  --color-ember-orange:  #C46B3C;
+  --color-cream:         #F7F3EA;
+  --color-pale-sage:     #E7EEE8;
+  --color-charcoal:      #252B28;
+  --color-stone-grey:    #6B7280;
+  --color-border-warm:   #DDD5C8;
+  --color-cloud-white:   #FFFFFF;
+
+  /* ── Feedback ──────────────────────────────────────────────── */
+  --color-success-green: #237A57;
+  --color-warning-amber: #9A5B00;
+  --color-error-red:     #B42318;
+
+  /* ── Admin sidebar ─────────────────────────────────────────── */
+  --color-sidebar-bg:    #18352F;
+  --color-sidebar-hover: rgba(247,243,234,0.08);
+  --color-sidebar-active:#C46B3C;
+
+  /* ── Legacy aliases for older admin components ─────────────── */
+  --color-midnight-navy: #18352F;
+  --color-scientific-teal: #C46B3C;
+  --color-pale-ice:      #F7F3EA;
+  --color-slate:         #6B7280;
+  --color-graphite:      #252B28;
+  --color-border-grey:   #DDD5C8;
+
+  --font-heading: 'Inter', system-ui, sans-serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --transition-fast: 120ms ease;
+  --transition-base: 200ms ease;
+
+  /* Admin layout dimensions */
+  --sidebar-width: 240px;
+  --sidebar-collapsed-width: 64px;
+  --topbar-height: 56px;
+}
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply bg-cream text-charcoal font-body antialiased;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading text-forest-green;
+    line-height: 1.25;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    @apply outline-2 outline-offset-2 outline-ember-orange rounded;
+  }
+
+  img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  input, button, textarea, select { font: inherit; }
+}
+
+@layer components {
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50;
+    @apply bg-ember-orange text-white px-4 py-2 rounded font-medium;
+  }
+}
