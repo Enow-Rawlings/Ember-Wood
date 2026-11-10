@@ -95,10 +95,22 @@ app.use(notFoundHandler)
 app.use(errorHandler)
 
 // ─── Start server ─────────────────────────────────────────────────────────────
+process.on('uncaughtException', (err) => {
+  console.error('[emberwood-api] Uncaught exception:', err)
+  process.exit(1)
+})
+process.on('unhandledRejection', (err) => {
+  console.error('[emberwood-api] Unhandled rejection:', err)
+  process.exit(1)
+})
+
 app.listen(env.PORT, () => {
-  console.log(`[emberwood-api] Server running on http://localhost:${env.PORT}`)
+  console.log(`[emberwood-api] Server running on port ${env.PORT}`)
   console.log(`[emberwood-api] Environment: ${env.NODE_ENV}`)
   console.log(`[emberwood-api] Health check: http://localhost:${env.PORT}${API_PREFIX}/health`)
+  console.log(`[emberwood-api] Supabase URL: ${env.SUPABASE_URL ? 'set' : 'NOT SET'}`)
+  console.log(`[emberwood-api] Supabase service key: ${env.SUPABASE_SERVICE_ROLE_KEY ? 'set' : 'NOT SET'}`)
+  console.log(`[emberwood-api] Supabase JWT secret: ${env.SUPABASE_JWT_SECRET ? 'set' : 'NOT SET'}`)
 })
 
 export default app
