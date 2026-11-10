@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { ShoppingCart, AlertTriangle, Truck, RotateCcw, Check } from 'lucide-react'
+import { ShoppingCart, Truck, RotateCcw, Check } from 'lucide-react'
 import { useProduct } from '@/hooks/useProducts'
 import { useSeo } from '@/hooks/useSeo'
 import { useProductStructuredData } from '@/hooks/useProductStructuredData'
@@ -20,7 +20,7 @@ export default function ProductPage() {
   const { data: product, isLoading, isError, refetch } = useProduct(slug ?? '')
   const { formatPrice } = useLocale()
 
-  // SEO � use API-provided seo_records if available, fall back to product data
+  // SEO — use API-provided seo_records if available, fall back to product data
   const seoRecord = product?.seo_records?.[0]
   const primaryImage = product?.product_media?.[0]?.cloudinary_url
   useSeo({
@@ -30,39 +30,25 @@ export default function ProductPage() {
     noIndex: seoRecord?.robots_directive?.includes('noindex') ?? false,
     image: primaryImage,
   })
+
   const addItem = useCartStore((s) => s.addItem)
   const cartItems = useCartStore((s) => s.items)
   const [added, setAdded] = useState(false)
   const [quantity, setQuantity] = useState(1)
 
-  const handleAddToCart = () => {
-    if (!product) return
-    addItem({
-      id: product.id,
-      name: product.name,
-      slug: product.slug,
-      sku: product.sku,
-      price: product.price,
-      currency: product.currency,
-      short_description: product.short_description,
-      stock_quantity: product.stock_quantity,
-      min_order_quantity: product.min_order_quantity ?? 1,
-      product_media: product.product_media ?? [],
-      categories: product.categories ?? [],
-      pack_format: product.pack_format ?? null,
-      log_length_cm: product.log_length_cm ?? null,
-      wood_condition: product.wood_condition ?? null,
-      sale_price: product.sale_price ?? null,
-      wood_type: product.wood_type ?? null,
-    }, quantity)
-    setAdded(true)
-    setTimeout(() => setAdded(false), 2000)
-  }
-
-  // Structured data
+  // Structured data hook — must stay above early returns
   useProductStructuredData(product)
 
-  const alreadyInCart = cartItems.some((i) => i.productId === product?.id)
+  // Sync quantity up to min_order_quantity when product data first arrives
+  // This must be above early returns to satisfy Rules of Hooks
+  const minQty = product?.min_order_quantity ?? 1
+  useEffect(() => {
+    if (quantity < minQty) {
+      setQuantity(minQty)
+    }
+  }, [minQty]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Early returns (all hooks must be called before this point) ──────────────
 
   if (isLoading) {
     return (
@@ -84,18 +70,36 @@ export default function ProductPage() {
     )
   }
 
+  // ── Derived values (product is guaranteed non-null past this point) ──────────
+
   const category = product.categories?.[0]?.category
   const inStock = isInStock(product.stock_quantity)
   const lowStock = isLowStock(product.stock_quantity, 10)
   const hasSale = product.sale_price && product.sale_price < product.price
-  const minQty = product.min_order_quantity ?? 1
+  const alreadyInCart = cartItems.some((i) => i.productId === product.id)
 
-  // Sync quantity to minimum order quantity when product loads
-  useEffect(() => {
-    if (quantity < minQty) {
-      setQuantity(minQty)
-    }
-  }, [minQty, quantity])
+  const handleAddToCart = () => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      sku: product.sku,
+      price: product.price,
+      currency: product.currency,
+      short_description: product.short_description,
+      stock_quantity: product.stock_quantity,
+      min_order_quantity: product.min_order_quantity ?? 1,
+      product_media: product.product_media ?? [],
+      categories: product.categories ?? [],
+      pack_format: product.pack_format ?? null,
+      log_length_cm: product.log_length_cm ?? null,
+      wood_condition: product.wood_condition ?? null,
+      sale_price: product.sale_price ?? null,
+      wood_type: product.wood_type ?? null,
+    }, quantity)
+    setAdded(true)
+    setTimeout(() => setAdded(false), 2000)
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -176,13 +180,14 @@ export default function ProductPage() {
 
           {/* Short description */}
           {product.short_description && (
-            <p className="text-base leading-relaxed text-charcoal dark:text-dark-text">{product.short_description}</p>
+            <p className="text-base leading-relaxed text-charcoal dark:text-dark-text">
+              {product.short_description}
+            </p>
           )}
 
           {/* Quantity + Add to cart */}
           {inStock ? (
             <div className="flex flex-wrap items-center gap-3">
-              {/* Quantity selector */}
               <div className="flex items-center rounded-lg border border-border-warm bg-white dark:border-dark-border dark:bg-dark-surface">
                 <button
                   type="button"
@@ -190,7 +195,9 @@ export default function ProductPage() {
                   aria-label="Decrease quantity"
                   className="flex h-10 w-10 items-center justify-center text-charcoal transition-colors hover:bg-pale-sage dark:text-dark-text dark:hover:bg-dark-surface-2"
                 >−</button>
-                <span aria-live="polite" className="w-10 text-center text-sm font-semibold text-charcoal dark:text-dark-text">{quantity}</span>
+                <span aria-live="polite" className="w-10 text-center text-sm font-semibold text-charcoal dark:text-dark-text">
+                  {quantity}
+                </span>
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.min(product.stock_quantity, q + 1))}
@@ -217,19 +224,6 @@ export default function ProductPage() {
               Out of stock
             </Button>
           )}
-
-          {/* Research use disclaimer � required, non-negotiable */}
-          <div className="flex gap-2 rounded-lg border border-warning-amber/30 bg-[#fef9ec] p-3 text-sm">
-            <AlertTriangle
-              size={16}
-              className="mt-0.5 flex-shrink-0 text-warning-amber"
-              aria-hidden="true"
-            />
-            <p className="text-charcoal">
-              <strong className="font-medium">.</strong> This product is not
-              intended for human or veterinary use. No therapeutic or health claims are made.
-            </p>
-          </div>
 
           {/* Shipping & returns links */}
           <div className="flex flex-col gap-2 border-t border-border-warm pt-4 text-sm text-stone-grey">
