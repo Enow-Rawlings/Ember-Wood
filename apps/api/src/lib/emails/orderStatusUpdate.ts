@@ -53,8 +53,8 @@ export function orderStatusUpdateEmail(opts: OrderStatusUpdateEmailOptions): str
     reference,
     newStatus,
     note,
-    supportEmail = 'support@emberwood.co.uk',
-    storeFrontUrl = 'https://emberwood.co.uk',
+    supportEmail = 'orders@buyfirewoodonline.co.uk',
+    storeFrontUrl = 'https://www.buyfirewoodonline.co.uk',
   } = opts
 
   const msg = STATUS_MESSAGES[newStatus] ?? {
@@ -83,11 +83,11 @@ export function orderStatusUpdateEmail(opts: OrderStatusUpdateEmailOptions): str
 
     <p style="margin:0;font-size:13px;color:#536273;line-height:1.6;">
       If you have any questions, contact us at
-      <a href="mailto:${supportEmail}" style="color:#087E8B;">${supportEmail}</a>.
+      <a href="mailto:${supportEmail}" style="color:#C8502A;">${supportEmail}</a>.
     </p>
   `
 
-  return baseLayout(content, `${msg.subject} — ${reference}`)
+  return baseLayout(content, `${msg.subject} — ${reference}`, supportEmail)
 }
 
 export function getOrderStatusEmailSubject(status: string, reference: string): string {

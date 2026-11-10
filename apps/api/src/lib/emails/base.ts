@@ -3,7 +3,7 @@
  * All transactional emails share this shell for consistent branding.
  * Keep inline styles — email clients strip external stylesheets.
  */
-export function baseLayout(content: string, previewText = ''): string {
+export function baseLayout(content: string, previewText = '', supportEmail = 'orders@buyfirewoodonline.co.uk'): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,10 +43,10 @@ export function baseLayout(content: string, previewText = ''): string {
             <td style="border-top:1px solid #DCE4EA;padding:20px 32px;background-color:#F5F8FA;">
               <p style="margin:0;font-size:12px;color:#536273;line-height:1.5;">
                 This email was sent by Emberwood. If you have questions, contact us at
-                <a href="mailto:support@emberwood.co.uk" style="color:#087E8B;text-decoration:none;">support@emberwood.co.uk</a>.
+                <a href="mailto:${supportEmail}" style="color:#C8502A;text-decoration:none;">${supportEmail}</a>.
               </p>
               <p style="margin:8px 0 0;font-size:11px;color:#8A9BAD;">
-                Emberwood · Research-grade peptides for laboratory use only.
+                Emberwood · Premium firewood &amp; timber, delivered across the UK.
               </p>
             </td>
           </tr>

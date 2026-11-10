@@ -14,32 +14,24 @@ export function chatReplyEmail(opts: ChatReplyEmailOptions): string {
   const {
     guestName,
     replyContent,
-    supportEmail = 'support@emberwood.co.uk',
+    supportEmail = 'orders@buyfirewoodonline.co.uk',
   } = opts
 
   const content = `
-    <h1 style="margin:0 0 8px;font-family:'Manrope',Helvetica,Arial,sans-serif;font-size:22px;font-weight:700;color:#10243A;">Reply from Emberwood support</h1>
+    <h1 style="margin:0 0 8px;font-family:'Manrope',Helvetica,Arial,sans-serif;font-size:22px;font-weight:700;color:#10243A;">Reply from Emberwood</h1>
     <p style="margin:0 0 24px;font-size:15px;color:#536273;line-height:1.6;">Hi ${guestName},</p>
 
     <p style="margin:0 0 16px;font-size:15px;color:#202A35;line-height:1.6;">
-      A member of our support team has replied to your enquiry:
+      A member of our team has replied to your enquiry:
     </p>
 
     ${infoBox(`<p style="margin:0;font-size:15px;color:#202A35;line-height:1.6;white-space:pre-wrap;">${replyContent}</p>`)}
 
     <p style="margin:16px 0 0;font-size:13px;color:#536273;line-height:1.6;">
       To continue the conversation, simply reply to this email or contact us directly at
-      <a href="mailto:${supportEmail}" style="color:#087E8B;">${supportEmail}</a>.
-    </p>
-
-    <p style="margin:16px 0 0;font-size:12px;color:#8A9BAD;line-height:1.5;">
-      All products supplied by Emberwood are for research and laboratory use only.
-      Not intended for human or veterinary use.
+      <a href="mailto:${supportEmail}" style="color:#C8502A;">${supportEmail}</a>.
     </p>
   `
 
-  return baseLayout(
-    content,
-    `Support reply from Emberwood — ${guestName}`
-  )
+  return baseLayout(content, `Reply from Emberwood — ${guestName}`, supportEmail)
 }

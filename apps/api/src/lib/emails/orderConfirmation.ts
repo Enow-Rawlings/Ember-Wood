@@ -25,7 +25,7 @@ interface OrderConfirmationEmailOptions {
 }
 
 export function orderConfirmationEmail(opts: OrderConfirmationEmailOptions): string {
-  const { customerName, reference, items, subtotal, currency, shippingAddress, supportEmail = 'support@emberwood.co.uk' } = opts
+  const { customerName, reference, items, subtotal, currency, shippingAddress, supportEmail = 'orders@buyfirewoodonline.co.uk' } = opts
 
   const fmt = (amount: number) =>
     new Intl.NumberFormat('en-GB', { style: 'currency', currency }).format(amount)
@@ -83,10 +83,10 @@ export function orderConfirmationEmail(opts: OrderConfirmationEmailOptions): str
       <li>Your order will be dispatched once payment is confirmed.</li>
     </ol>
 
-    ${warningBox(`<strong>No payment has been taken.</strong> This is a request only. Do not send payment until you receive instructions from our team. If you have questions, email <a href="mailto:${supportEmail}" style="color:#087E8B;">${supportEmail}</a>.`)}
+    ${warningBox(`<strong>No payment has been taken.</strong> This is a request only. Do not send payment until you receive instructions from our team. If you have questions, email <a href="mailto:${supportEmail}" style="color:#C8502A;">${supportEmail}</a>.`)}
 
-    <p style="margin:0;font-size:13px;color:#536273;">All products are supplied for <strong>research and laboratory use only</strong>. Not for human or veterinary use.</p>
+    <p style="margin:0;font-size:13px;color:#536273;">Premium firewood and timber, delivered across the UK.</p>
   `
 
-  return baseLayout(content, `Order request ${reference} received — we'll be in touch shortly.`)
+  return baseLayout(content, `Order request ${reference} received — we'll be in touch shortly.`, supportEmail)
 }

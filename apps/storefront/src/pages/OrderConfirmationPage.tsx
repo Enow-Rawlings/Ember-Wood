@@ -20,7 +20,7 @@ export default function OrderConfirmationPage() {
   const location = useLocation()
   const state = location.state as LocationState | null
 
-  // Guard — someone navigated here directly without an order
+  // Guard ï¿½ someone navigated here directly without an order
   if (!state?.reference) {
     return <Navigate to="/shop" replace />
   }
@@ -68,7 +68,7 @@ export default function OrderConfirmationPage() {
             {
               icon: <Clock size={18} aria-hidden="true" />,
               title: 'Team review',
-              body: 'Our team will review your request and prepare payment and fulfilment details. We aim to respond within 1–2 business days.',
+              body: 'Our team will review your request and prepare payment and fulfilment details. We aim to respond within 1ï¿½2 business days.',
             },
             {
               icon: <HelpCircle size={18} aria-hidden="true" />,
@@ -89,13 +89,13 @@ export default function OrderConfirmationPage() {
         </ol>
       </div>
 
-      {/* Important notice — payment deferred */}
-      <div className="mt-8 rounded-lg border border-warning-amber/30 bg-[#fef9ec] p-4 text-sm text-charcoal">
-        <strong className="font-medium">Important:</strong> This is a request only — not a confirmed
+      {/* Important notice â€” payment deferred */}
+      <div className="mt-8 rounded-lg border border-warning-amber/30 bg-warning-amber/10 p-4 text-sm text-charcoal dark:text-dark-text">
+        <strong className="font-medium">Important:</strong> This is a request only â€” not a confirmed
         or paid order. Do not attempt to send payment until you receive instructions from our team.
         If you have questions, contact us at{' '}
-        <a href="mailto:support@emberwood.co.uk" className="text-ember-orange">
-          support@emberwood.co.uk
+        <a href="mailto:orders@buyfirewoodonline.co.uk" className="text-ember-orange underline">
+          orders@buyfirewoodonline.co.uk
         </a>
         .
       </div>
