@@ -6,11 +6,11 @@
   "rewrites": [
     {
       "source": "/sitemap.xml",
-      "destination": "https://nuclara.onrender.com/api/v1/sitemap.xml"
+      "destination": "https://ember-wood.onrender.com/api/v1/sitemap.xml"
     },
     {
       "source": "/robots.txt",
-      "destination": "https://nuclara.onrender.com/api/v1/robots.txt"
+      "destination": "https://ember-wood.onrender.com/api/v1/robots.txt"
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
