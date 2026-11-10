@@ -357,6 +357,16 @@ chatRouter.post(
         content: message,
       })
 
+      // Notify admin of new chat message (non-blocking)
+      const adminRecipient = env.ALERT_EMAIL || env.EMAIL_SUPPORT
+      if (adminRecipient && env.RESEND_API_KEY) {
+        sendEmail({
+          to: adminRecipient,
+          subject: `New live chat message from ${name}`,
+          html: `<p>A new chat message has been received from <strong>${name}</strong> (${email}).</p><blockquote>${message}</blockquote><p>Reply in the <a href="${env.ADMIN_ORIGIN}/chat">admin live chat</a>.</p>`,
+        }).catch(() => {})
+      }
+
       ok(res, {
         id: conversation.id,
         message: 'Your message has been received. We will reply to your email shortly.',
