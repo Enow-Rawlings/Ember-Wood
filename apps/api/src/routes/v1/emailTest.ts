@@ -4,7 +4,7 @@ import { requireAuth, requireAdminAuth, requireRole } from '../../middleware/aut
 import { validateBody } from '../../middleware/validate.js'
 import { ok } from '../../utils/response.js'
 import { sendEmail } from '../../lib/resend.js'
-import { isProd } from '../../config/env.js'
+import { env } from '../../config/env.js'
 import { ApiError } from '../../utils/ApiError.js'
 import {
   orderConfirmationEmail,
@@ -14,6 +14,27 @@ import {
 } from '../../lib/emails/index.js'
 
 export const emailTestRouter = Router()
+
+/**
+ * GET /api/v1/email-test/config
+ * Admin/owner only. Shows the current email configuration (no secrets).
+ */
+emailTestRouter.get(
+  '/config',
+  requireAuth,
+  requireAdminAuth,
+  requireRole('owner'),
+  (_req, res) => {
+    ok(res, {
+      EMAIL_FROM: env.EMAIL_FROM || '(not set)',
+      EMAIL_SUPPORT: env.EMAIL_SUPPORT || '(not set)',
+      ALERT_EMAIL: env.ALERT_EMAIL || '(not set)',
+      RESEND_API_KEY: env.RESEND_API_KEY
+        ? `${env.RESEND_API_KEY.slice(0, 8)}...${env.RESEND_API_KEY.slice(-4)}`
+        : '(not set)',
+    })
+  }
+)
 
 /**
  * POST /api/v1/email-test
@@ -38,10 +59,6 @@ emailTestRouter.post(
   ),
   async (req, res, next) => {
     try {
-      if (isProd) {
-        throw new ApiError(403, 'Email test endpoint is disabled in production')
-      }
-
       const { to, template } = req.body as { to: string; template: string }
       const testRef = 'NUC-TEST-000001'
 
@@ -55,12 +72,13 @@ emailTestRouter.post(
             customerName: 'Test Customer',
             reference: testRef,
             items: [
-              { name: 'BPC-157 (5mg)', sku: 'NUC-BPC157-5', quantity: 2, unitPrice: 42.00, lineTotal: 84.00, currency: 'EUR' },
-              { name: 'TB-500 (5mg)', sku: 'NUC-TB500-5', quantity: 1, unitPrice: 48.00, lineTotal: 48.00, currency: 'EUR' },
+              { name: 'Kiln Dried Oak Logs — Crate', sku: 'HW-OAK-CR-001', quantity: 1, unitPrice: 176.00, lineTotal: 176.00, currency: 'GBP' },
+              { name: 'Hardwood Kindling — Large Net', sku: 'KD-HW-LN-001', quantity: 2, unitPrice: 8.50, lineTotal: 17.00, currency: 'GBP' },
             ],
-            subtotal: 132.00,
-            currency: 'EUR',
-            shippingAddress: { line1: '123 Test Street', city: 'Berlin', postalCode: '10115', country: 'DE' },
+            subtotal: 193.00,
+            currency: 'GBP',
+            shippingAddress: { line1: '123 Test Street', city: 'London', postalCode: 'SW1A 1AA', country: 'GB' },
+            supportEmail: env.EMAIL_SUPPORT,
           })
           break
 
@@ -69,14 +87,15 @@ emailTestRouter.post(
           html = orderStatusUpdateEmail({
             customerName: 'Test Customer',
             reference: testRef,
-            newStatus: 'awaiting_payment',
-            note: 'This is a test note from the admin.',
+            newStatus: 'confirmed',
+            note: 'Your order has been confirmed and will be delivered within 3–5 working days.',
+            supportEmail: env.EMAIL_SUPPORT,
           })
           break
 
         case 'password_reset':
           subject = '[TEST] Reset your password'
-          html = passwordResetEmail({ resetUrl: 'https://emberwood.co.uk/account/reset-password?token=test-token-123' })
+          html = passwordResetEmail({ resetUrl: `${env.FRONTEND_ORIGIN}/account/reset-password?token=test-token-123` })
           break
 
         case 'admin_notification':
@@ -85,10 +104,10 @@ emailTestRouter.post(
             reference: testRef,
             customerName: 'Test Customer',
             customerEmail: to,
-            subtotal: 132.00,
-            currency: 'EUR',
+            subtotal: 193.00,
+            currency: 'GBP',
             itemCount: 2,
-            marketCode: 'EU',
+            marketCode: 'GB',
           })
           break
 
