@@ -47,6 +47,8 @@ const PACK_FORMATS = [
   { value: 'Pallet', label: 'Pallet' },
   { value: 'Box', label: 'Box' },
   { value: 'Bundle', label: 'Bundle' },
+  { value: 'Sack', label: 'Sack' },
+  { value: 'Loose load', label: 'Loose load' },
 ]
 
 export function FilterSidebar({
