@@ -20,6 +20,10 @@ interface AiGenerateContext {
   sku?: string
   shortDescription?: string
   longDescription?: string
+  woodSpecies?: string
+  woodType?: string
+  woodCondition?: string
+  packFormat?: string
   categoryName?: string
   existing?: string
 }
