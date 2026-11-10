@@ -36,20 +36,34 @@ async function getResendClient(): Promise<import('resend').Resend> {
  */
 export async function sendEmail(options: SendEmailOptions): Promise<void> {
   if (!env.RESEND_API_KEY) {
-    console.warn('[email] RESEND_API_KEY not configured — email skipped in dev')
+    console.warn('[email] RESEND_API_KEY not configured — email skipped')
     return
   }
 
+  if (!env.EMAIL_FROM) {
+    console.warn('[email] EMAIL_FROM not configured — email skipped')
+    return
+  }
+
+  console.log(`[email] Sending "${options.subject}" to ${JSON.stringify(options.to)} from ${env.EMAIL_FROM}`)
+
   try {
     const resend = await getResendClient()
-    await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: env.EMAIL_FROM,
       to: options.to,
       subject: options.subject,
       html: options.html,
       ...(options.replyTo !== undefined ? { replyTo: options.replyTo } : {}),
     })
-  } catch (error) {
-    console.error('[email] Failed to send email:', error)
+
+    if (error) {
+      // Resend returns errors as objects, not thrown exceptions
+      console.error('[email] Resend API error:', JSON.stringify(error))
+    } else {
+      console.log(`[email] Sent successfully — Resend id: ${data?.id}`)
+    }
+  } catch (err) {
+    console.error('[email] Unexpected error sending email:', err)
   }
 }
