@@ -357,8 +357,8 @@ chatRouter.post(
         content: message,
       })
 
-      // Notify admin of new chat message (non-blocking)
-      const adminRecipient = env.ALERT_EMAIL || env.EMAIL_SUPPORT
+      // Notify admin of new chat message via ALERT_EMAIL (visitor/chat alerts)
+      const adminRecipient = env.ALERT_EMAIL
       if (adminRecipient && env.RESEND_API_KEY) {
         sendEmail({
           to: adminRecipient,

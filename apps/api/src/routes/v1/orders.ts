@@ -207,9 +207,9 @@ ordersRouter.post(
         }),
       })
 
-      // Admin notification — goes to ALERT_EMAIL (order inbox), falls back to EMAIL_SUPPORT
+      // Admin notification — goes to EMAIL_SUPPORT (the orders inbox)
       sendEmail({
-        to: env.ALERT_EMAIL || env.EMAIL_SUPPORT,
+        to: env.EMAIL_SUPPORT,
         subject: `New order request — ${publicReference}`,
         html: adminOrderNotificationEmail({
           reference: publicReference,
