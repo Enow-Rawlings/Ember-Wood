@@ -1,6 +1,9 @@
 import axios from 'axios'
 
-const baseURL = import.meta.env.VITE_API_BASE_URL ?? '/api/v1'
+// Ensure /api/v1 suffix is always present — works whether the env var
+// includes it or not (e.g. "https://ember-wood.onrender.com" or ".../api/v1")
+const rawBase = (import.meta.env.VITE_API_BASE_URL ?? '/api/v1').replace(/\/$/, '')
+const baseURL = rawBase.endsWith('/api/v1') ? rawBase : `${rawBase}/api/v1`
 
 export const api = axios.create({
   baseURL,
