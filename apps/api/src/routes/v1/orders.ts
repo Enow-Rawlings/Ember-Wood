@@ -54,11 +54,27 @@ const createOrderSchema = z.object({
 ordersRouter.post(
   '/',
   orderLimiter,
-  requireAuth,
   validateBody(createOrderSchema),
   async (req, res, next) => {
     try {
-      const authReq = req as AuthenticatedRequest
+      // Auth is optional — guests can submit orders without an account.
+      // If a valid token is present we link the order to the customer record.
+      let guestUserId: string | null = null
+      const authHeader = req.headers.authorization
+      if (authHeader?.startsWith('Bearer ')) {
+        try {
+          const { createRemoteJWKSet, jwtVerify } = await import('jose')
+          const jwks = createRemoteJWKSet(new URL(`${env.SUPABASE_URL}/auth/v1/.well-known/jwks.json`))
+          const { payload } = await jwtVerify(authHeader.slice(7), jwks, {
+            issuer: `${env.SUPABASE_URL}/auth/v1`,
+            audience: 'authenticated',
+          })
+          if (payload.sub) guestUserId = payload.sub
+        } catch {
+          // Invalid token — continue as guest
+        }
+      }
+
       const body = req.body as z.infer<typeof createOrderSchema>
 
       // 1. Revalidate each product server-side — only requires published status.
@@ -118,12 +134,10 @@ ordersRouter.post(
       // 4. Generate non-sequential public reference
       const publicReference = `NUC-${Date.now().toString(36).toUpperCase()}-${uuidv4().slice(0, 6).toUpperCase()}`
 
-      // 5. Resolve customer record id (FK to customers.id, not auth UUID)
-      const { data: customerRecord } = await supabase
-        .from('customers')
-        .select('id')
-        .eq('auth_user_id', authReq.userId)
-        .single()
+      // 5. Resolve customer record id (FK to customers.id) — only if logged in
+      const { data: customerRecord } = guestUserId
+        ? await supabase.from('customers').select('id').eq('auth_user_id', guestUserId).single()
+        : { data: null }
 
       // 6. Create order record
       const { data: order, error: orderError } = await supabase
