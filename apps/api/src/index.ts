@@ -46,18 +46,12 @@ app.use(
 )
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
+// Auth is handled by Supabase JWT tokens, not by CORS origin restrictions.
+// Public routes (products, categories, blog) are intentionally open.
+// Protected routes (admin, orders, media) require valid auth tokens regardless of origin.
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow server-to-server (no origin) in development
-      if (!origin && env.NODE_ENV === 'development') {
-        return callback(null, true)
-      }
-      if (!origin || env.ALLOWED_ORIGINS.includes(origin)) {
-        return callback(null, true)
-      }
-      callback(new Error(`Origin ${origin} not allowed by CORS`))
-    },
+    origin: true,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
