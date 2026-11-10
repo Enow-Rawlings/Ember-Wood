@@ -50,20 +50,25 @@ sitemapRouter.get('/sitemap.xml', async (_req, res, next) => {
     ]
 
     // Published, visible, indexable products
-    // Check SEO record robots directive — exclude noindex
     const { data: products } = await supabase
       .from('products')
-      .select(`slug, updated_at, seo_records (robots_directive)`)
+      .select('id, slug, updated_at')
       .eq('status', 'published')
       .eq('is_visible', true)
       .order('updated_at', { ascending: false })
-      .limit(500)
+      .limit(1000)
+
+    // Fetch noindex product IDs separately
+    const { data: noindexSeo } = await supabase
+      .from('seo_records')
+      .select('entity_id')
+      .eq('entity_type', 'product')
+      .ilike('robots_directive', '%noindex%')
+
+    const noindexIds = new Set((noindexSeo ?? []).map((s) => s.entity_id))
 
     const productUrls = (products ?? [])
-      .filter((p) => {
-        const seo = (p.seo_records as Array<{ robots_directive: string }> | null)?.[0]
-        return !seo || !seo.robots_directive?.includes('noindex')
-      })
+      .filter((p) => !noindexIds.has(p.id))
       .map((p) =>
         urlEntry(`${STOREFRONT_ORIGIN}/product/${p.slug}`, p.updated_at, 'weekly', '0.8')
       )
