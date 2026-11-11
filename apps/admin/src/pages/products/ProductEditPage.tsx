@@ -99,10 +99,12 @@ export default function ProductEditPage() {
       setTimeout(() => setSaved(false), 3000)
     },
     onError: (err: unknown) => {
-      setError(
-        (err as { response?: { data?: { error?: { message?: string } } } })
-          ?.response?.data?.error?.message ?? 'Failed to update product.'
-      )
+      const apiErr = err as { response?: { data?: { error?: { message?: string; issues?: Array<{ path: string; message: string }> } } } }
+      const issues = apiErr?.response?.data?.error?.issues
+      const issueText = issues?.length
+        ? issues.map((i) => `${i.path}: ${i.message}`).join(', ')
+        : null
+      setError(issueText ?? apiErr?.response?.data?.error?.message ?? 'Failed to update product.')
     },
   })
 
@@ -217,18 +219,25 @@ export default function ProductEditPage() {
             </div>
 
             <Button type="button" variant="primary" loading={mutation.isPending}
-              onClick={() => mutation.mutate({
-                name,
-                sku,
-                price: parseFloat(price) || 0,
-                salePrice: salePrice.trim() !== '' ? parseFloat(salePrice) : null,
-                shortDescription: shortDesc.trim() || undefined,
-                longDescription: longDesc.trim() || undefined,
-                stockQuantity: parseInt(stockQty, 10) || 0,
-                lowStockThreshold: parseInt(lowStock, 10) || 0,
-                minOrderQuantity: parseInt(minOrderQty, 10) || 1,
-                isVisible,
-              })}>
+              onClick={() => {
+                const parsedPrice = parseFloat(price)
+                const parsedSalePrice = salePrice.trim() !== '' ? parseFloat(salePrice) : null
+                const parsedStock = parseInt(stockQty, 10)
+                const parsedLowStock = parseInt(lowStock, 10)
+                const parsedMinOrder = parseInt(minOrderQty, 10)
+                mutation.mutate({
+                  name,
+                  sku,
+                  ...(parsedPrice > 0 ? { price: parsedPrice } : {}),
+                  salePrice: parsedSalePrice,
+                  shortDescription: shortDesc.trim() || undefined,
+                  longDescription: longDesc.trim() || undefined,
+                  stockQuantity: isNaN(parsedStock) ? 0 : parsedStock,
+                  lowStockThreshold: isNaN(parsedLowStock) ? 0 : parsedLowStock,
+                  minOrderQuantity: isNaN(parsedMinOrder) || parsedMinOrder < 1 ? 1 : parsedMinOrder,
+                  isVisible,
+                })
+              }}>
               {mutation.isPending ? 'Saving…' : 'Save product details'}
             </Button>
           </div>
