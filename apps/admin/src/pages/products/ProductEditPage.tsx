@@ -217,7 +217,18 @@ export default function ProductEditPage() {
             </div>
 
             <Button type="button" variant="primary" loading={mutation.isPending}
-              onClick={() => mutation.mutate({ name, sku, price: parseFloat(price), salePrice: salePrice ? parseFloat(salePrice) : undefined, shortDescription: shortDesc || undefined, longDescription: longDesc || undefined, stockQuantity: parseInt(stockQty, 10), lowStockThreshold: parseInt(lowStock, 10), minOrderQuantity: parseInt(minOrderQty, 10), isVisible })}>
+              onClick={() => mutation.mutate({
+                name,
+                sku,
+                price: parseFloat(price) || 0,
+                salePrice: salePrice.trim() !== '' ? parseFloat(salePrice) : null,
+                shortDescription: shortDesc.trim() || undefined,
+                longDescription: longDesc.trim() || undefined,
+                stockQuantity: parseInt(stockQty, 10) || 0,
+                lowStockThreshold: parseInt(lowStock, 10) || 0,
+                minOrderQuantity: parseInt(minOrderQty, 10) || 1,
+                isVisible,
+              })}>
               {mutation.isPending ? 'Saving…' : 'Save product details'}
             </Button>
           </div>

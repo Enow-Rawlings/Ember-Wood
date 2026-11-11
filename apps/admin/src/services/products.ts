@@ -65,7 +65,7 @@ export interface CreateProductPayload {
   shortDescription?: string | undefined
   longDescription?: string | undefined
   price: number
-  salePrice?: number | undefined
+  salePrice?: number | null | undefined
   currency?: string
   stockQuantity: number
   lowStockThreshold: number
